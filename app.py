@@ -14,7 +14,7 @@ CORS(app)
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
-@app.route('/users', methods=["GET","POST","PATCH","DELETE"])
+@app.route('/api/users', methods=["GET","POST","PATCH","DELETE"])
 def users():
     if request.method == "GET":
         user_id = request.args.get("user_id")
@@ -61,7 +61,7 @@ def users():
         else:
             return Response("Something went wrong!", mimetype="text/html", status=500)
 
-@app.route('/login', methods=["POST","DELETE"])
+@app.route('/api/login', methods=["POST","DELETE"])
 def login():
     if request.method == "POST":
         username = request.json.get('username')
@@ -78,7 +78,7 @@ def login():
         else:
             return Response("Something went wrong!", mimetype="text/html", status=500)
         
-@app.route('/foods', methods=["GET","POST","PATCH","DELETE"])
+@app.route('/api/foods', methods=["GET","POST","PATCH","DELETE"])
 def food():
     if request.method == "GET":
         user_id = request.args.get("user_id")
