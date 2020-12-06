@@ -2,6 +2,7 @@ import mariadb
 import dbcreds
 import random
 import string
+import hashlib
 from datetime import datetime
 
 def get_random_alphanumeric_string(length):
@@ -9,21 +10,95 @@ def get_random_alphanumeric_string(length):
     result_str = ''.join((random.choice(letters_and_digits) for i in range(length)))
     return result_str
 
+def login(username, password):
+    conn = None
+    cursor = None
+    try:
+        conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
+        cursor = conn.cursor()
+        cursor.execute("SELECT u.salt FROM users u WHERE u.username=?", [username, ])
+        salt = cursor.fetchone()[0]
+        print(salt)
+        new_password = salt + password
+        hash = hashlib.sha512(new_password.encode()).hexdigest()
+        print(hash)
+        cursor.execute("SELECT u.user_id FROM users u WHERE u.username=? AND u.password=?", [username, hash])
+        user_id = cursor.fetchone()[0]
+        if user_id != None:
+            token = get_random_alphanumeric_string(50)
+            login_time = str(datetime.now())[0:19]
+            cursor.execute("INSERT INTO token(user_id, token, login_time) VALUES (?,?,?)", [user_id, token, login_time])
+            conn.commit()
+            rows = cursor.rowcount
+            if rows == 1:
+                cursor.execute("SELECT u.username ,u.user_id ,u.email ,u.birthday ,u.bio ,u.join_date ,u.`local` FROM users u  WHERE user_id=?", [user_id])
+                rows = cursor.fetchone()
+                users = {}
+                headers = [ i[0] for i in cursor.description]
+                users = dict(zip(headers,rows))
+                users['token'] = token
+    except mariadb.ProgrammingError:
+        print("program error...")
+    except mariadb.DataError:
+        print("Data error...")
+    except mariadb.DatabaseError:
+        print("Database error...")
+    except mariadb.OperationalError:
+        print("connect error...")
+    finally:
+        if(cursor != None):
+            cursor.close()
+        if(conn != None):
+            conn.rollback()
+            conn.close()
+        return users
+    
+
+def logout(token):
+    conn = None
+    cursor = None
+    try:
+        conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM token WHERE token=?", [token,])
+        conn.commit()
+        rows = cursor.rowcount
+    except mariadb.ProgrammingError:
+        print("program error...")
+    except mariadb.DataError:
+        print("Data error...")
+    except mariadb.DatabaseError:
+        print("Database error...")
+    except mariadb.OperationalError:
+        print("connect error...")
+    finally:
+        if(cursor != None):
+            cursor.close()
+        if(conn != None):
+            conn.rollback()
+            conn.close()
+        if rows == 1:
+            return True
+        else:
+            return False
+
+
 def getUsers(user_id):
     conn = None
     cursor = None
     try:
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
-        if user_id == None or user_id == "": 
-            cursor.execute("SELECT username, id, email, birthdate, bio, url, join_date FROM users")
+        if user_id == None: 
+            cursor.execute("SELECT u.username ,u.user_id ,u.email ,u.birthday ,u.bio ,u.join_date ,u.`local` FROM users u ")
             rows = cursor.fetchall()
             users = []
             headers = [ i[0] for i in cursor.description]
             for row in rows:
                 users.append(dict(zip(headers,row)))
+            print(users)
         else:
-            cursor.execute("SELECT username, id, email, birthdate, bio, url, join_date FROM users WHERE id=?", [user_id])
+            cursor.execute("SELECT u.username ,u.user_id ,u.email ,u.birthday ,u.bio ,u.join_date ,u.`local`, u.icon FROM users u  WHERE user_id=?", [user_id])
             rows = cursor.fetchone()
             users = {}
             headers = [ i[0] for i in cursor.description]
@@ -43,3 +118,131 @@ def getUsers(user_id):
             conn.rollback()
             conn.close()
         return users
+    
+def newUsers(username,password,email,birthday,bio,local,icon):
+    conn = None
+    cursor = None
+    try:
+        conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
+        cursor = conn.cursor()
+        join_date = str(datetime.now())[0:10]
+        salt = get_random_alphanumeric_string(10)
+        print(salt)
+        new_password = salt + password
+        hash = hashlib.sha512(new_password.encode()).hexdigest()
+        cursor.execute("INSERT INTO users (username,password,email,birthday,bio,`local`,icon,join_date, salt) VALUES (?,?,?,?,?,?,?,?,?)", [username,hash,email,birthday,bio,local,icon,join_date,salt])
+        conn.commit()
+        rows = cursor.rowcount
+        if rows == 1:
+            user = login(username, password)
+    except mariadb.ProgrammingError:
+        print("program error...")
+    except mariadb.DataError:
+        print("Data error...")
+    except mariadb.DatabaseError:
+        print("Database error...")
+    except mariadb.OperationalError:
+        print("connect error...")
+    finally:
+        if(cursor != None):
+            cursor.close()
+        if(conn != None):
+            conn.rollback()
+            conn.close()
+        return user
+    
+def editUsers(username,password,old_password,email,birthday,bio,local,icon,token):
+    conn = None
+    cursor = None
+    try:
+        conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
+        cursor = conn.cursor()
+        cursor.execute("SELECT user_id FROM token WHERE token=?", [token,])
+        user_id = cursor.fetchone()[0]
+        print(user_id)
+        if user_id != None:
+            user = getUsers(user_id)
+            print(user)
+            salt = get_random_alphanumeric_string(10)
+            print(salt)
+            new_password = salt + password
+            hash = hashlib.sha512(new_password.encode()).hexdigest()
+            print(hash)
+            cursor.execute("SELECT u.salt, u.password FROM users u WHERE u.user_id=?", [user_id, ])
+            old_salt = cursor.fetchone()
+            print(old_salt[0])
+            old_new_password = old_salt[0] + old_password
+            old_hash = hashlib.sha512(old_new_password.encode()).hexdigest()
+            print(old_hash)
+            if username != None and username != "" and username != user['username']:
+                cursor.execute("UPDATE users SET username=? WHERE user_id=?",[username, user_id])
+            if email != None and email != "" and email != user['email']:
+                cursor.execute("UPDATE users SET email=? WHERE user_id=?",[email, user_id])
+            if birthday != None and birthday != "" and birthday != user['birthday']:
+                cursor.execute("UPDATE users SET birthday=? WHERE user_id=?",[birthday, user_id])
+            if bio != None and bio != "" and bio != user['bio']:
+                cursor.execute("UPDATE users SET bio=? WHERE user_id=?",[bio, user_id])
+            if icon != None and icon != "" and icon != user['icon']:
+                cursor.execute("UPDATE users SET icon=? WHERE user_id=?",[icon, user_id])
+            if local != None and local != "" and local != user['local']:
+                cursor.execute("UPDATE users SET `local`=? WHERE user_id=?",[local, user_id])
+            if password != None and password != "" and hash != old_salt[1]:
+                cursor.execute("UPDATE users SET password=? WHERE user_id=? AND password=?",[hash, user_id, old_hash])
+                cursor.execute("UPDATE users SET salt=? WHERE user_id=?",[salt, user_id])
+            conn.commit()
+            rows = cursor.rowcount
+        if rows == 1:
+            user = getUsers(user_id)
+    except mariadb.ProgrammingError:
+        print("program error...")
+    except mariadb.DataError:
+        print("Data error...")
+    except mariadb.DatabaseError:
+        print("Database error...")
+    except mariadb.OperationalError:
+        print("connect error...")
+    finally:
+        if(cursor != None):
+            cursor.close()
+        if(conn != None):
+            conn.rollback()
+            conn.close()
+        return user
+    
+    
+def deleteUsers(password,token):
+    conn = None
+    cursor = None
+    try:
+        conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
+        cursor = conn.cursor()
+        cursor.execute("SELECT user_id FROM token WHERE token=?", [token,])
+        user_id = cursor.fetchone()[0]
+        print(user_id)
+        if user_id != None:
+            cursor.execute("SELECT u.salt, u.password FROM users u WHERE u.user_id=?", [user_id,])
+            salt = cursor.fetchone()[0]
+            print(salt)
+            new_password = salt + password
+            hash = hashlib.sha512(new_password.encode()).hexdigest()
+            cursor.execute("DELETE FROM users WHERE user_id=? AND password=?",[user_id, hash])
+            conn.commit()
+            rows = cursor.rowcount      
+    except mariadb.ProgrammingError:
+        print("program error...")
+    except mariadb.DataError:
+        print("Data error...")
+    except mariadb.DatabaseError:
+        print("Database error...")
+    except mariadb.OperationalError:
+        print("connect error...")
+    finally:
+        if(cursor != None):
+            cursor.close()
+        if(conn != None):
+            conn.rollback()
+            conn.close()
+        if rows == 1:
+            return True
+        else:
+            return False
