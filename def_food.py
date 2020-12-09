@@ -9,7 +9,7 @@ def getOneFood(food_id):
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
         print(food_id)
-        cursor.execute("SELECT u.user_id,u.username ,u.icon ,u.birthday ,u.`local` ,u.bio ,u.join_date ,f.food_id ,f.food_descreption ,f.food_name ,f.food_local ,f.food_category ,f.created_at ,i.ingredient_id, i.ingredient ,i.ingredient_remark ,mp.process_id, mp.process ,mp.video ,mp.process_remark FROM food f INNER JOIN users u ON f.user_id = u.user_id INNER JOIN making_process mp ON f.food_id = mp.food_id INNER JOIN ingredient i ON f.food_id = i.food_id WHERE f.food_id = ?", [food_id,])
+        cursor.execute("SELECT u.user_id,u.username ,u.icon ,u.birthday ,u.`local` ,u.bio ,u.join_date ,f.food_id ,f.food_description ,f.food_name ,f.food_local ,f.food_category ,f.created_at ,i.ingredient_id, i.ingredient ,i.ingredient_remark ,mp.process_id, mp.process ,mp.video ,mp.process_remark FROM food f INNER JOIN users u ON f.user_id = u.user_id INNER JOIN making_process mp ON f.food_id = mp.food_id INNER JOIN ingredient i ON f.food_id = i.food_id WHERE f.food_id = ?", [food_id,])
         rows = cursor.fetchone()
         print(rows)
         data = {}
@@ -44,7 +44,7 @@ def getUserFoods(user_id):
     try:
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
-        cursor.execute("SELECT u.user_id,u.username ,u.icon ,u.birthday ,u.`local` ,u.bio ,u.join_date ,f.food_id ,f.food_descreption ,f.food_name ,f.food_local ,f.food_category ,f.created_at ,i.ingredient_id, i.ingredient ,i.ingredient_remark ,mp.process_id, mp.process ,mp.video ,mp.process_remark FROM food f INNER JOIN users u ON f.user_id = u.user_id INNER JOIN making_process mp ON f.food_id = mp.food_id INNER JOIN ingredient i ON f.food_id = i.food_id WHERE f.user_id = ?", [user_id,])
+        cursor.execute("SELECT u.user_id,u.username ,u.icon ,u.birthday ,u.`local` ,u.bio ,u.join_date ,f.food_id ,f.food_description ,f.food_name ,f.food_local ,f.food_category ,f.created_at ,i.ingredient_id, i.ingredient ,i.ingredient_remark ,mp.process_id, mp.process ,mp.video ,mp.process_remark FROM food f INNER JOIN users u ON f.user_id = u.user_id INNER JOIN making_process mp ON f.food_id = mp.food_id INNER JOIN ingredient i ON f.food_id = i.food_id WHERE f.user_id = ?", [user_id,])
         rows = cursor.fetchall()
         # print(rows)
         data = []
@@ -81,7 +81,7 @@ def getCategoryFoods(food_category):
     try:
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
-        cursor.execute("SELECT u.user_id,u.username ,u.icon ,u.birthday ,u.`local` ,u.bio ,u.join_date ,f.food_id ,f.food_descreption ,f.food_name ,f.food_local ,f.food_category ,f.created_at ,i.ingredient_id, i.ingredient ,i.ingredient_remark ,mp.process_id, mp.process ,mp.video ,mp.process_remark FROM food f INNER JOIN users u ON f.user_id = u.user_id INNER JOIN making_process mp ON f.food_id = mp.food_id INNER JOIN ingredient i ON f.food_id = i.food_id WHERE f.food_category = ?", [food_category,])
+        cursor.execute("SELECT u.user_id,u.username ,u.icon ,u.birthday ,u.`local` ,u.bio ,u.join_date ,f.food_id ,f.food_description ,f.food_name ,f.food_local ,f.food_category ,f.created_at ,i.ingredient_id, i.ingredient ,i.ingredient_remark ,mp.process_id, mp.process ,mp.video ,mp.process_remark FROM food f INNER JOIN users u ON f.user_id = u.user_id INNER JOIN making_process mp ON f.food_id = mp.food_id INNER JOIN ingredient i ON f.food_id = i.food_id WHERE f.food_category = ?", [food_category,])
         rows = cursor.fetchall()
         print("food_category")
         data = []
@@ -119,7 +119,7 @@ def getAllFoods():
     try:
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
-        cursor.execute("SELECT u.user_id,u.username ,u.icon ,u.birthday ,u.`local` ,u.bio ,u.join_date ,f.food_id ,f.food_descreption ,f.food_name ,f.food_local ,f.food_category ,f.created_at ,i.ingredient_id, i.ingredient ,i.ingredient_remark ,mp.process_id, mp.process ,mp.video ,mp.process_remark FROM food f INNER JOIN users u ON f.user_id = u.user_id INNER JOIN making_process mp ON f.food_id = mp.food_id INNER JOIN ingredient i ON f.food_id = i.food_id")
+        cursor.execute("SELECT u.user_id,u.username ,u.icon ,u.birthday ,u.`local` ,u.bio ,u.join_date ,f.food_id ,f.food_description ,f.food_name ,f.food_local ,f.food_category ,f.created_at ,i.ingredient_id, i.ingredient ,i.ingredient_remark ,mp.process_id, mp.process ,mp.video ,mp.process_remark FROM food f INNER JOIN users u ON f.user_id = u.user_id INNER JOIN making_process mp ON f.food_id = mp.food_id INNER JOIN ingredient i ON f.food_id = i.food_id")
         rows = cursor.fetchall()
         data = []
         headers = [ i[0] for i in cursor.description]
@@ -149,7 +149,7 @@ def getAllFoods():
             conn.close()
         return data
     
-def newFood(token,food_name,food_descreption,food_local,food_category,ingredient,ingredient_remark,process,video,process_remark,images):
+def newFood(token,food_name,food_description,food_local,food_category,ingredient,ingredient_remark,process,video,process_remark,images):
     conn = None
     cursor = None
     rows = None
@@ -161,11 +161,11 @@ def newFood(token,food_name,food_descreption,food_local,food_category,ingredient
         print(user_id)
         if user_id != None:
             created_at = str(datetime.now())[0:19]
-            cursor.execute("INSERT INTO food(food_name,food_descreption,food_local,food_category,user_id,created_at) VALUES (?,?,?,?,?,?)",[food_name,food_descreption,food_local,food_category,user_id,created_at])
+            cursor.execute("INSERT INTO food(food_name,food_description,food_local,food_category,user_id,created_at) VALUES (?,?,?,?,?,?)",[food_name,food_description,food_local,food_category,user_id,created_at])
             conn.commit()
             rows = cursor.rowcount
             if rows == 1: 
-                cursor.execute("SELECT food_id FROM food WHERE food_descreption=? AND created_at=?", [food_descreption,created_at])
+                cursor.execute("SELECT food_id FROM food WHERE food_description=? AND created_at=?", [food_description,created_at])
                 food_id = cursor.fetchone()[0]
                 cursor.execute("INSERT INTO ingredient(ingredient,ingredient_remark,food_id) VALUES (?,?,?)",[ingredient,ingredient_remark,food_id])
                 cursor.execute("INSERT INTO making_process(process,video,process_remark,food_id) VALUES (?,?,?,?)",[process,video,process_remark,food_id])
@@ -191,7 +191,7 @@ def newFood(token,food_name,food_descreption,food_local,food_category,ingredient
             conn.close()
         return data
     
-def editFood(token,food_id,food_name,food_descreption,food_local,food_category,ingredient,ingredient_remark,process,video,process_remark,images):
+def editFood(token,food_id,food_name,food_description,food_local,food_category,ingredient,ingredient_remark,process,video,process_remark,images):
     conn = None
     cursor = None
     rows = None
@@ -203,7 +203,7 @@ def editFood(token,food_id,food_name,food_descreption,food_local,food_category,i
         print(user_id)
         if user_id != None:
             created_at = str(datetime.now())[0:19]
-            cursor.execute("INSERT INTO food(food_name,food_descreption,food_local,food_category,user_id,created_at) VALUES (?,?,?,?,?,?)",[food_name,food_descreption,food_local,food_category,user_id,created_at])
+            cursor.execute("INSERT INTO food(food_name,food_description,food_local,food_category,user_id,created_at) VALUES (?,?,?,?,?,?)",[food_name,food_description,food_local,food_category,user_id,created_at])
             conn.commit()
             rows = cursor.rowcount
             if rows == 1: 

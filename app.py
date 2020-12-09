@@ -100,7 +100,7 @@ def food():
     if request.method == "POST":
         token = request.json.get('token')
         food_name = request.json.get("food_name")
-        food_descreption = request.json.get("food_descreption")
+        food_description = request.json.get("food_description")
         food_local = request.json.get("food_local")
         food_category = request.json.get("food_category")
         ingredient = request.json.get("ingredient")
@@ -109,7 +109,7 @@ def food():
         video = request.json.get("video")
         process_remark = request.json.get("process_remark")
         images = request.json.get("images")
-        data = def_food.newFood(token,food_name,food_descreption,food_local,food_category,ingredient,ingredient_remark,process,video,process_remark,images)
+        data = def_food.newFood(token,food_name,food_description,food_local,food_category,ingredient,ingredient_remark,process,video,process_remark,images)
         if data != None:
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
         else:
@@ -118,7 +118,7 @@ def food():
         token = request.json.get('token')
         food_id = request.json.get("food_id")
         food_name = request.json.get("food_name")
-        food_descreption = request.json.get("food_descreption")
+        food_description = request.json.get("food_description")
         food_local = request.json.get("food_local")
         food_category = request.json.get("food_category")
         ingredient = request.json.get("ingredient")
@@ -129,7 +129,7 @@ def food():
         video = request.json.get("video")
         process_remark = request.json.get("process_remark")
         images = request.json.get("images")
-        data = def_food.editFood(token,food_id,food_name,food_descreption,food_local,food_category,ingredient,ingredient_remark,process,video,process_remark,images)
+        data = def_food.editFood(token,food_id,food_name,food_description,food_local,food_category,ingredient,ingredient_remark,process,video,process_remark,images)
         if data != None:
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
         else:
