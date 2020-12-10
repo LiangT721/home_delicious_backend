@@ -83,14 +83,14 @@ def food():
     if request.method == "GET":
         user_id = request.args.get("user_id")
         food_id = request.args.get("food_id")
-        food_category = request.args.get("food_category")
+        cooking_way = request.args.get("cooking_way")
         print(user_id)
         if food_id != None:
             data = def_food.getOneFood(food_id)
         elif user_id != None:
             data = def_food.getUserFoods(user_id)
-        elif food_category != None:
-            data = def_food.getCategoryFoods(food_category)
+        elif cooking_way != None:
+            data = def_food.getCategoryFoods(cooking_way)
         else:
             data = def_food.getAllFoods()
         if data != None:
@@ -103,13 +103,12 @@ def food():
         food_description = request.json.get("food_description")
         food_local = request.json.get("food_local")
         food_category = request.json.get("food_category")
-        ingredient = request.json.get("ingredient")
-        ingredient_remark = request.json.get("ingredient_remark")
-        process = request.json.get("process")
-        video = request.json.get("video")
-        process_remark = request.json.get("process_remark")
+        cooking_way = request.json.get("cooking_way")
+        difficulty = request.json.get("difficulty")
+        cooking_time = request.json.get("cooking_time")
+        tag = request.json.get("tag")
         images = request.json.get("images")
-        data = def_food.newFood(token,food_name,food_description,food_local,food_category,ingredient,ingredient_remark,process,video,process_remark,images)
+        data = def_food.newFood(token,food_name,food_description,food_local,food_category,cooking_way,difficulty,cooking_time,tag,images)
         if data != None:
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
         else:
@@ -142,7 +141,28 @@ def food():
         else:
             return Response("Something went wrong!", mimetype="text/html", status=500)
         
-        
+@app.route('/api/methods', methods=["GET","POST","PATCH","DELETE"])
+def method():
+    if request.method == "GET":
+        food_id = request.args.get("food_id")
+        data = def_food.getMethod(food_id)
+        if data != None:
+            return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
+        else:
+            return Response("Something went wrong!", mimetype="text/html", status=500)
+    if request.method == "POST":
+        token = request.json.get('token')
+        food_id = request.json.get("food_id")
+        ingredient = request.json.get("ingredient")
+        process = request.json.get("process")
+        remark = request.json.get("remark")
+        video = request.json.get("video")
+        data = def_food.newMethod(token,food_id,ingredient,process,remark,video)
+        if data != None:
+            return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
+        else:
+            return Response("Something went wrong!", mimetype="text/html", status=500)
+                         
 @app.route('/api/upload', methods=["POST"])
 def upload():
     target = os.path.join(APP_ROOT, '/var/www/****/dist/img')   

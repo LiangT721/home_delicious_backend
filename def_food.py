@@ -9,19 +9,41 @@ def getOneFood(food_id):
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
         print(food_id)
-        cursor.execute("SELECT u.user_id,u.username ,u.icon ,u.birthday ,u.`local` ,u.bio ,u.join_date ,f.food_id ,f.food_description ,f.food_name ,f.food_local ,f.food_category ,f.created_at ,i.ingredient_id, i.ingredient ,i.ingredient_remark ,mp.process_id, mp.process ,mp.video ,mp.process_remark FROM food f INNER JOIN users u ON f.user_id = u.user_id INNER JOIN making_process mp ON f.food_id = mp.food_id INNER JOIN ingredient i ON f.food_id = i.food_id WHERE f.food_id = ?", [food_id,])
+        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.`local` ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_local ,f.tag, f.grade FROM food f INNER JOIN users u ON f.user_id = u.user_id WHERE f.food_id = ?", [food_id,])
         rows = cursor.fetchone()
         print(rows)
         data = {}
         headers = [ i[0] for i in cursor.description]
         data = dict(zip(headers,rows)) 
-        cursor.execute("SELECT fi.image_id ,fi.image_url FROM 	food f INNER JOIN food_image fi ON f.food_id = fi.food_id WHERE f.food_id = ?", [food_id])
-        rows = cursor.fetchall()
-        img=[]
+    except mariadb.ProgrammingError:
+        print("program error...")
+    except mariadb.DataError:
+        print("Data error...")
+    except mariadb.DatabaseError:
+        print("Database error...")
+    except mariadb.OperationalError:
+        print("connect error...")
+    finally:
+        if(cursor != None):
+            cursor.close()
+        if(conn != None):
+            conn.rollback()
+            conn.close()
+        return data
+    
+def getMethod(food_id):
+    conn = None
+    cursor = None
+    try:
+        conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
+        cursor = conn.cursor()
+        print(food_id)
+        cursor.execute("SELECT * FROM methods m WHERE m.food_id = ?", [food_id,])
+        rows = cursor.fetchone()
+        print(rows)
+        data = {}
         headers = [ i[0] for i in cursor.description]
-        for row in rows:
-            img.append(dict(zip(headers,row)))
-        data['image'] = img
+        data = dict(zip(headers,rows)) 
     except mariadb.ProgrammingError:
         print("program error...")
     except mariadb.DataError:
@@ -44,21 +66,12 @@ def getUserFoods(user_id):
     try:
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
-        cursor.execute("SELECT u.user_id,u.username ,u.icon ,u.birthday ,u.`local` ,u.bio ,u.join_date ,f.food_id ,f.food_description ,f.food_name ,f.food_local ,f.food_category ,f.created_at ,i.ingredient_id, i.ingredient ,i.ingredient_remark ,mp.process_id, mp.process ,mp.video ,mp.process_remark FROM food f INNER JOIN users u ON f.user_id = u.user_id INNER JOIN making_process mp ON f.food_id = mp.food_id INNER JOIN ingredient i ON f.food_id = i.food_id WHERE f.user_id = ?", [user_id,])
+        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.`local` ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_local ,f.tag,f.grade FROM food f INNER JOIN users u ON f.user_id = u.user_id WHERE f.user_id = ? ORDER BY f.food_id DESC", [user_id,])
         rows = cursor.fetchall()
-        # print(rows)
         data = []
         headers = [ i[0] for i in cursor.description]
         for row in rows:
-            food = dict(zip(headers,row)) 
-            cursor.execute("SELECT fi.image_id ,fi.image_url FROM 	food f INNER JOIN food_image fi ON f.food_id = fi.food_id WHERE f.food_id = ?", [food['food_id']])
-            images = cursor.fetchall()
-            img=[]
-            imgheaders = [ i[0] for i in cursor.description]
-            for image in images:
-                img.append(dict(zip(imgheaders,image)))
-            food['image'] = img
-            data.append(food)
+            data.append(dict(zip(headers,row)))
     except mariadb.ProgrammingError:
         print("program error...")
     except mariadb.DataError:
@@ -75,27 +88,18 @@ def getUserFoods(user_id):
             conn.close()
         return data
     
-def getCategoryFoods(food_category):
+def getCategoryFoods(cooking_way):
     conn = None
     cursor = None
     try:
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
-        cursor.execute("SELECT u.user_id,u.username ,u.icon ,u.birthday ,u.`local` ,u.bio ,u.join_date ,f.food_id ,f.food_description ,f.food_name ,f.food_local ,f.food_category ,f.created_at ,i.ingredient_id, i.ingredient ,i.ingredient_remark ,mp.process_id, mp.process ,mp.video ,mp.process_remark FROM food f INNER JOIN users u ON f.user_id = u.user_id INNER JOIN making_process mp ON f.food_id = mp.food_id INNER JOIN ingredient i ON f.food_id = i.food_id WHERE f.food_category = ?", [food_category,])
+        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.`local` ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_local ,f.tag,f.grade FROM food f INNER JOIN users u ON f.user_id = u.user_id WHERE f.cooking_way = ? ORDER BY f.food_id DESC", [cooking_way,])
         rows = cursor.fetchall()
-        print("food_category")
         data = []
         headers = [ i[0] for i in cursor.description]
         for row in rows:
-            food = dict(zip(headers,row)) 
-            cursor.execute("SELECT fi.image_id ,fi.image_url FROM 	food f INNER JOIN food_image fi ON f.food_id = fi.food_id WHERE f.food_id = ?", [food['food_id']])
-            images = cursor.fetchall()
-            img=[]
-            imgheaders = [ i[0] for i in cursor.description]
-            for image in images:
-                img.append(dict(zip(imgheaders,image)))
-            food['image'] = img
-            data.append(food)
+            data.append(dict(zip(headers,row)))
     except mariadb.ProgrammingError:
         print("program error...")
     except mariadb.DataError:
@@ -119,20 +123,12 @@ def getAllFoods():
     try:
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
-        cursor.execute("SELECT u.user_id,u.username ,u.icon ,u.birthday ,u.`local` ,u.bio ,u.join_date ,f.food_id ,f.food_description ,f.food_name ,f.food_local ,f.food_category ,f.created_at ,i.ingredient_id, i.ingredient ,i.ingredient_remark ,mp.process_id, mp.process ,mp.video ,mp.process_remark FROM food f INNER JOIN users u ON f.user_id = u.user_id INNER JOIN making_process mp ON f.food_id = mp.food_id INNER JOIN ingredient i ON f.food_id = i.food_id")
+        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.`local` ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_local ,f.tag,f.grade FROM food f INNER JOIN users u ON f.user_id = u.user_id ORDER BY f.food_id DESC")
         rows = cursor.fetchall()
         data = []
         headers = [ i[0] for i in cursor.description]
         for row in rows:
-            food = dict(zip(headers,row)) 
-            cursor.execute("SELECT fi.image_id ,fi.image_url FROM 	food f INNER JOIN food_image fi ON f.food_id = fi.food_id WHERE f.food_id = ?", [food['food_id']])
-            images = cursor.fetchall()
-            img=[]
-            imgheaders = [ i[0] for i in cursor.description]
-            for image in images:
-                img.append(dict(zip(imgheaders,image)))
-            food['image'] = img
-            data.append(food)
+            data.append(dict(zip(headers,row)))
     except mariadb.ProgrammingError:
         print("program error...")
     except mariadb.DataError:
@@ -149,7 +145,7 @@ def getAllFoods():
             conn.close()
         return data
     
-def newFood(token,food_name,food_description,food_local,food_category,ingredient,ingredient_remark,process,video,process_remark,images):
+def newFood(token,food_name,food_description,food_local,food_category,cooking_way,difficulty,cooking_time,tag,images):
     conn = None
     cursor = None
     rows = None
@@ -161,20 +157,49 @@ def newFood(token,food_name,food_description,food_local,food_category,ingredient
         print(user_id)
         if user_id != None:
             created_at = str(datetime.now())[0:19]
-            cursor.execute("INSERT INTO food(food_name,food_description,food_local,food_category,user_id,created_at) VALUES (?,?,?,?,?,?)",[food_name,food_description,food_local,food_category,user_id,created_at])
+            cursor.execute("INSERT INTO food(food_name,food_description,food_local,food_category,user_id,created_at,cooking_way,difficulty,cooking_time,tag,image) VALUES (?,?,?,?,?,?,?,?,?,?,?)",[food_name,food_description,food_local,food_category,user_id,created_at,cooking_way,difficulty,cooking_time,tag,images])
             conn.commit()
             rows = cursor.rowcount
             if rows == 1: 
-                cursor.execute("SELECT food_id FROM food WHERE food_description=? AND created_at=?", [food_description,created_at])
-                food_id = cursor.fetchone()[0]
-                cursor.execute("INSERT INTO ingredient(ingredient,ingredient_remark,food_id) VALUES (?,?,?)",[ingredient,ingredient_remark,food_id])
-                cursor.execute("INSERT INTO making_process(process,video,process_remark,food_id) VALUES (?,?,?,?)",[process,video,process_remark,food_id])
-                for image in images:
-                    cursor.execute("INSERT INTO food_image(image_url,food_id) VALUES (?,?)",[image,food_id])
-                conn.commit()
-                rows = cursor.rowcount
-                if rows == 1:
-                    data = getOneFood(food_id)       
+                cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.`local` ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_local ,f.tag, f.grade FROM food f INNER JOIN users u ON f.user_id = u.user_id WHERE f.created_at = ? AND f.image=?", [created_at, images])
+                rows = cursor.fetchone()
+                print(rows)
+                data = {}
+                headers = [ i[0] for i in cursor.description]
+                data = dict(zip(headers,rows)) 
+    except mariadb.ProgrammingError:
+        print("program error...")
+    except mariadb.DataError:
+        print("Data error...")
+    except mariadb.DatabaseError:
+        print("Database error...")
+    except mariadb.OperationalError:
+        print("connect error...")
+    finally:
+        if(cursor != None):
+            cursor.close()
+        if(conn != None):
+            conn.rollback()
+            conn.close()
+        return data
+    
+def newMethod(token,food_id,ingredient,process,remark,video):
+    conn = None
+    cursor = None
+    rows = None
+    try:
+        conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
+        cursor = conn.cursor()
+        cursor.execute("SELECT user_id FROM token WHERE token=?", [token,])
+        user_id = cursor.fetchone()[0]
+        print(user_id)
+        if user_id != None:
+            created_at = str(datetime.now())[0:19]
+            cursor.execute("INSERT INTO methods(food_id,ingredient,process,remark,video) VALUES (?,?,?,?,?)",[food_id,ingredient,process,remark,video])
+            conn.commit()
+            rows = cursor.rowcount
+            if rows == 1: 
+                data = getMethod(food_id)           
     except mariadb.ProgrammingError:
         print("program error...")
     except mariadb.DataError:
