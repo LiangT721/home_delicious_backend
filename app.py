@@ -179,7 +179,7 @@ def upload():
         print(destination)
         file.save(destination)
         print("aa")
-        image = PIL.Image.open(destination)
+        image = Image.open(destination)
         print(image)
         with open(destination, 'r+b') as f:
             with Image.open(f) as image:
