@@ -180,13 +180,18 @@ def upload():
         file.save(destination)
         print("aa")
         image = Image.open(destination)
-        print(image.size)
         print(image.width)
         print(image.height)
-        with open(destination, 'r+b') as f:
+        if image.width > 1980 and image.height < 1980:
+            print("1")
+            with open(destination, 'r+b') as f:
             with Image.open(f) as image:
-                cover = resizeimage.resize_cover(image, [1980,1980])
+                cover = resizeimage.resize_cover(image, [1980, auto])
                 cover.save(destination, image.format)
+        # with open(destination, 'r+b') as f:
+        #     with Image.open(f) as image:
+        #         cover = resizeimage.resize_cover(image, [1980,1980])
+        #         cover.save(destination, image.format)
         # with open(destination, 'r+b'):
         #     with Image.open() as image:
         #         is_valid = resizeimage.resize_cover.validate(image, [200, 100])
