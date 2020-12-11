@@ -180,7 +180,8 @@ def upload():
         file.save(destination)
         print("aa")
         image = Image.open(destination)
-        print(image)
+        print(image.size)
+        print(image.witdh)
         with open(destination, 'r+b') as f:
             with Image.open(f) as image:
                 cover = resizeimage.resize_cover(image, [1980,1980])
