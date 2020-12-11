@@ -183,24 +183,20 @@ def upload():
         print(image.width)
         print(image.height)
         if image.width > 1980 and image.height < 1980:
-            print("1")
             with open(destination, 'r+b') as f:
                 with Image.open(f) as image:
                     cover = resizeimage.resize_width(image, 1980)
                     cover.save(destination, image.format)
-        # with open(destination, 'r+b') as f:
-        #     with Image.open(f) as image:
-        #         cover = resizeimage.resize_cover(image, [1980,1980])
-        #         cover.save(destination, image.format)
-        # with open(destination, 'r+b'):
-        #     with Image.open() as image:
-        #         is_valid = resizeimage.resize_cover.validate(image, [200, 100])
-        # if is_valid:
-        #     with Image.open(file) as image:
-        #         resizeimage.resize_cover.validate(image, [200, 100], validate=False)
-        #         cover = resizeimage.resize_cover(image, [200, 100])
-        # cover.save(destination, image.format)
-        
+        elif image.width < 1980 and image.height > 1980:
+            with open(destination, 'r+b') as f:
+                with Image.open(f) as image:
+                    cover = resizeimage.resize_height(image, 1980)
+                    cover.save(destination, image.format)
+        elif image.width > 1980 and image.height > 1980:
+            with open(destination, 'r+b') as f:
+                with Image.open(f) as image:
+                    cover = resizeimage.resize_cover(image, [1980,1980])
+                    cover.save(destination, image.format)
     return Response(json.dumps(destination, default=str), mimetype="application/json", status=204)
 if __name__=="__main__":
     app.run(port=4555,debug=True)
