@@ -178,9 +178,11 @@ def upload():
         destination = "/".join([target, filename])
         print(destination)
         file.save(destination)
+        print("aa")
+        image = PIL.Image.open(destination)
+        print(image)
         with open(destination, 'r+b') as f:
             with Image.open(f) as image:
-                print(f.size)
                 cover = resizeimage.resize_cover(image, [1980,1980])
                 cover.save(destination, image.format)
         # with open(destination, 'r+b'):
