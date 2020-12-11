@@ -165,7 +165,7 @@ def method():
                          
 @app.route('/api/upload', methods=["POST"])
 def upload():
-    target = os.path.join(APP_ROOT, '/var/www/****/dist/img')   
+    target = os.path.join(APP_ROOT, '/var/www/homeDelicious/home_delicious_frontend/dist/img/uploadImgs')   
     if not os.path.isdir(target):
         os.mkdir(target)
     files = request.files.getlist("file")
