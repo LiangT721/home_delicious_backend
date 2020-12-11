@@ -185,9 +185,9 @@ def upload():
         if image.width > 1980 and image.height < 1980:
             print("1")
             with open(destination, 'r+b') as f:
-            with Image.open(f) as image:
-                cover = resizeimage.resize_cover(image, [1980, auto])
-                cover.save(destination, image.format)
+                with Image.open(f) as image:
+                    cover = resizeimage.resize_cover(image, [1980, auto])
+                    cover.save(destination, image.format)
         # with open(destination, 'r+b') as f:
         #     with Image.open(f) as image:
         #         cover = resizeimage.resize_cover(image, [1980,1980])
