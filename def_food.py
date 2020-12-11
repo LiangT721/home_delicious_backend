@@ -1,6 +1,12 @@
 import mariadb
 import dbcreds
 from datetime import datetime
+import os
+# if os.path.exists("C:/Users/Taylo/InnoTech/Assignments/Project/Home delicious/home_delicious_frontend/users_food_004.jpg"):
+#   os.remove("C:/Users/Taylo/InnoTech/Assignments/Project/Home delicious/home_delicious_frontend/users_food_004.jpg")
+# else:
+#   print("The file does not exist")
+
 
 def getOneFood(food_id):
     conn = None
