@@ -31,7 +31,7 @@ def login(username, password):
             conn.commit()
             rows = cursor.rowcount
             if rows == 1:
-                cursor.execute("SELECT u.username ,u.user_id ,u.email ,u.birthday ,u.bio ,u.join_date ,u.location FROM users u  WHERE user_id=?", [user_id])
+                cursor.execute("SELECT u.username ,u.user_id ,u.email ,u.birthday ,u.bio ,u.join_date ,u.location ,u.icon FROM users u  WHERE user_id=?", [user_id])
                 rows = cursor.fetchone()
                 users = {}
                 headers = [ i[0] for i in cursor.description]
