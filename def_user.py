@@ -31,7 +31,7 @@ def login(username, password):
             conn.commit()
             rows = cursor.rowcount
             if rows == 1:
-                cursor.execute("SELECT u.username ,u.user_id ,u.email ,u.birthday ,u.bio ,u.join_date ,u.`local` FROM users u  WHERE user_id=?", [user_id])
+                cursor.execute("SELECT u.username ,u.user_id ,u.email ,u.birthday ,u.bio ,u.join_date ,u.location FROM users u  WHERE user_id=?", [user_id])
                 rows = cursor.fetchone()
                 users = {}
                 headers = [ i[0] for i in cursor.description]
@@ -90,7 +90,7 @@ def getUsers(user_id):
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
         if user_id == None: 
-            cursor.execute("SELECT u.username ,u.user_id ,u.email ,u.birthday ,u.bio ,u.join_date ,u.`local` FROM users u ")
+            cursor.execute("SELECT u.username ,u.user_id ,u.email ,u.birthday ,u.bio ,u.join_date ,u.location FROM users u ")
             rows = cursor.fetchall()
             users = []
             headers = [ i[0] for i in cursor.description]
@@ -98,7 +98,7 @@ def getUsers(user_id):
                 users.append(dict(zip(headers,row)))
             print(users)
         else:
-            cursor.execute("SELECT u.username ,u.user_id ,u.email ,u.birthday ,u.bio ,u.join_date ,u.`local`, u.icon FROM users u  WHERE user_id=?", [user_id])
+            cursor.execute("SELECT u.username ,u.user_id ,u.email ,u.birthday ,u.bio ,u.join_date ,u.location, u.icon FROM users u  WHERE user_id=?", [user_id])
             rows = cursor.fetchone()
             users = {}
             headers = [ i[0] for i in cursor.description]
@@ -119,7 +119,7 @@ def getUsers(user_id):
             conn.close()
         return users
     
-def newUsers(username,password,email,birthday,bio,local,icon):
+def newUsers(username,password,email,birthday,bio,location,icon):
     conn = None
     cursor = None
     try:
@@ -130,7 +130,7 @@ def newUsers(username,password,email,birthday,bio,local,icon):
         print(salt)
         new_password = salt + password
         hash = hashlib.sha512(new_password.encode()).hexdigest()
-        cursor.execute("INSERT INTO users (username,password,email,birthday,bio,`local`,icon,join_date, salt) VALUES (?,?,?,?,?,?,?,?,?)", [username,hash,email,birthday,bio,local,icon,join_date,salt])
+        cursor.execute("INSERT INTO users (username,password,email,birthday,bio,location,icon,join_date, salt) VALUES (?,?,?,?,?,?,?,?,?)", [username,hash,email,birthday,bio,location,icon,join_date,salt])
         conn.commit()
         rows = cursor.rowcount
         if rows == 1:
@@ -151,7 +151,7 @@ def newUsers(username,password,email,birthday,bio,local,icon):
             conn.close()
         return user
     
-def editUsers(username,password,old_password,email,birthday,bio,local,icon,token):
+def editUsers(username,password,old_password,email,birthday,bio,location,icon,token):
     conn = None
     cursor = None
     try:
@@ -184,8 +184,8 @@ def editUsers(username,password,old_password,email,birthday,bio,local,icon,token
                 cursor.execute("UPDATE users SET bio=? WHERE user_id=?",[bio, user_id])
             if icon != None and icon != "" and icon != user['icon']:
                 cursor.execute("UPDATE users SET icon=? WHERE user_id=?",[icon, user_id])
-            if local != None and local != "" and local != user['local']:
-                cursor.execute("UPDATE users SET `local`=? WHERE user_id=?",[local, user_id])
+            if location != None and location != "" and location != user['location']:
+                cursor.execute("UPDATE users SET location=? WHERE user_id=?",[location, user_id])
             if password != None and password != "" and hash != old_salt[1]:
                 cursor.execute("UPDATE users SET password=? WHERE user_id=? AND password=?",[hash, user_id, old_hash])
                 cursor.execute("UPDATE users SET salt=? WHERE user_id=?",[salt, user_id])

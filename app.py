@@ -31,10 +31,10 @@ def users():
         password = request.json.get('password')
         email = request.json.get('email')
         birthday = request.json.get('birthday')
-        local = request.json.get('local')
+        location = request.json.get('location')
         bio = request.json.get('bio')
         icon = request.json.get('icon')
-        data = def_user.newUsers(username,password,email,birthday,bio,local,icon)
+        data = def_user.newUsers(username,password,email,birthday,bio,location,icon)
         if data !=None:
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
         else:
@@ -45,11 +45,11 @@ def users():
         old_password = request.json.get('old_password')
         email = request.json.get('email')
         birthday = request.json.get('birthday')
-        local = request.json.get('local')
+        location = request.json.get('location')
         bio = request.json.get('bio')
         icon = request.json.get('icon')
         token = request.json.get('token')
-        data = def_user.editUsers(username,password,old_password,email,birthday,bio,local,icon,token)
+        data = def_user.editUsers(username,password,old_password,email,birthday,bio,location,icon,token)
         if data != None:
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
         else:
@@ -103,14 +103,14 @@ def food():
         token = request.json.get('token')
         food_name = request.json.get("food_name")
         food_description = request.json.get("food_description")
-        food_local = request.json.get("food_local")
+        food_location = request.json.get("food_location")
         food_category = request.json.get("food_category")
         cooking_way = request.json.get("cooking_way")
         difficulty = request.json.get("difficulty")
         cooking_time = request.json.get("cooking_time")
         tag = request.json.get("tag")
         images = request.json.get("images")
-        data = def_food.newFood(token,food_name,food_description,food_local,food_category,cooking_way,difficulty,cooking_time,tag,images)
+        data = def_food.newFood(token,food_name,food_description,food_location,food_category,cooking_way,difficulty,cooking_time,tag,images)
         if data != None:
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
         else:
@@ -120,7 +120,7 @@ def food():
         food_id = request.json.get("food_id")
         food_name = request.json.get("food_name")
         food_description = request.json.get("food_description")
-        food_local = request.json.get("food_local")
+        food_location = request.json.get("food_location")
         food_category = request.json.get("food_category")
         ingredient = request.json.get("ingredient")
         ingredient_id = request.json.get("ingredient_id")
@@ -130,7 +130,7 @@ def food():
         video = request.json.get("video")
         process_remark = request.json.get("process_remark")
         images = request.json.get("images")
-        data = def_food.editFood(token,food_id,food_name,food_description,food_local,food_category,ingredient,ingredient_remark,process,video,process_remark,images)
+        data = def_food.editFood(token,food_id,food_name,food_description,food_location,food_category,ingredient,ingredient_remark,process,video,process_remark,images)
         if data != None:
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
         else:
