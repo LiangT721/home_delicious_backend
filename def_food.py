@@ -222,7 +222,7 @@ def newMethod(token,food_id,ingredient,process,remark,video):
             conn.close()
         return data
     
-def editFood(token,food_id,food_name,food_description,food_location,food_category,ingredient,ingredient_remark,process,video,process_remark,images):
+def editFood(token,food_id,food_name,food_description,food_location,food_category,cooking_way,difficulty,cooking_time,tag,images):
     conn = None
     cursor = None
     rows = None
@@ -233,20 +233,13 @@ def editFood(token,food_id,food_name,food_description,food_location,food_categor
         user_id = cursor.fetchone()[0]
         print(user_id)
         if user_id != None:
-            created_at = str(datetime.now())[0:19]
-            cursor.execute("INSERT INTO food(food_name,food_description,food_location,food_category,user_id,created_at) VALUES (?,?,?,?,?,?)",[food_name,food_description,food_location,food_category,user_id,created_at])
-            conn.commit()
-            rows = cursor.rowcount
-            if rows == 1: 
-                cursor.execute("SELECT food_id FROM food WHERE food_descreption=? AND created_at=?", [food_descreption,created_at])
-                food_id = cursor.fetchone()[0]
-                cursor.execute("INSERT INTO ingredient(ingredient,ingredient_remark,food_id) VALUES (?,?,?)",[ingredient,ingredient_remark,food_id])
-                cursor.execute("INSERT INTO making_process(process,video,process_remark,food_id) VALUES (?,?,?,?)",[process,video,process_remark,food_id])
-                for image in images:
-                    cursor.execute("INSERT INTO food_image(image_url,food_id) VALUES (?,?)",[image,food_id])
-                conn.commit()
+            food = getOneFood(food_id)
+            print(food)
+            if food_name != None and food_name != "" and food_name != food.food_name:
+                cursor.execute("UPDATE food SET food_name=? WHERE food_id=? AND user_id=?", [food_name, food_id, user_id])
+                conn.commit
                 rows = cursor.rowcount
-                if rows == 1:
+                if rows == 1: 
                     data = getOneFood(food_id)       
     except mariadb.ProgrammingError:
         print("program error...")

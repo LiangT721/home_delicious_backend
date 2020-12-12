@@ -115,22 +115,19 @@ def food():
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
         else:
             return Response("Something went wrong!", mimetype="text/html", status=500)
-    if request.method == "POST":
+    if request.method == "PATCH":
         token = request.json.get('token')
         food_id = request.json.get("food_id")
         food_name = request.json.get("food_name")
         food_description = request.json.get("food_description")
         food_location = request.json.get("food_location")
         food_category = request.json.get("food_category")
-        ingredient = request.json.get("ingredient")
-        ingredient_id = request.json.get("ingredient_id")
-        ingredient_remark = request.json.get("ingredient_remark")
-        process = request.json.get("process")
-        process_id = request.json.get("process_id")
-        video = request.json.get("video")
-        process_remark = request.json.get("process_remark")
+        cooking_way = request.json.get("cooking_way")
+        difficulty = request.json.get("difficulty")
+        cooking_time = request.json.get("cooking_time")
+        tag = request.json.get("tag")
         images = request.json.get("images")
-        data = def_food.editFood(token,food_id,food_name,food_description,food_location,food_category,ingredient,ingredient_remark,process,video,process_remark,images)
+        data = def_food.editFood(token,food_id,food_name,food_description,food_location,food_category,cooking_way,difficulty,cooking_time,tag,images)
         if data != None:
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
         else:
