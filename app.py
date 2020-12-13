@@ -7,6 +7,7 @@ from flask_cors import CORS
 import os
 import def_food
 import def_user
+import def_other
 from PIL import Image
 from resizeimage import resizeimage
 
@@ -161,6 +162,57 @@ def method():
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
         else:
             return Response("Something went wrong!", mimetype="text/html", status=500)
+    if request.method == "PATCH":
+        token = request.json.get('token')
+        food_id = request.json.get("food_id")
+        ingredient = request.json.get("ingredient")
+        process = request.json.get("process")
+        remark = request.json.get("remark")
+        video = request.json.get("video")
+        data = def_food.editMethod(token,food_id,ingredient,process,remark,video)
+        if data != None:
+            return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
+        else:
+            return Response("Something went wrong!", mimetype="text/html", status=500)
+        
+@app.route('/api/collection', methods=["POST","PATCH","DELETE"])
+def collection():
+    if request.method == "POST":
+        token = request.json.get('token')
+        food_id = request.json.get("food_id")
+        if def_other.addCollection(token, food_id):
+            return Response("Collection success!", mimetype="application/json", status=200)
+        else:
+            return Response("Something went wrong!", mimetype="text/html", status=500)
+    if request.method == "DELETE":
+        token = request.json.get('token')
+        food_id = request.json.get("food_id")
+        if def_other.deleteCollection(token, food_id):
+            return Response("delete success!", mimetype="application/json", status=200)
+        else:
+            return Response("Something went wrong!", mimetype="text/html", status=500)
+        
+@app.route('/api/grade', methods=["POST","PATCH"])
+def grade():
+    if request.method == "POST":
+        token = request.json.get('token')
+        food_id = request.json.get("food_id")
+        grade = request.json.get("grade")
+        data = def_other.addGrade(token, food_id, grade)
+        if data != None:
+            return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
+        else:
+            return Response("Something went wrong!", mimetype="text/html", status=500)
+    if request.method == "PATCH":
+        token = request.json.get('token')
+        food_id = request.json.get("food_id")
+        grade = request.json.get("grade")
+        data = def_other.editGrade(token, food_id, grade)
+        if data != None:
+            return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
+        else:
+            return Response("Something went wrong!", mimetype="text/html", status=500)
+
                          
 @app.route('/api/upload', methods=["POST"])
 def upload():
