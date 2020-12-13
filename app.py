@@ -175,8 +175,15 @@ def method():
         else:
             return Response("Something went wrong!", mimetype="text/html", status=500)
         
-@app.route('/api/collection', methods=["POST","PATCH","DELETE"])
+@app.route('/api/collection', methods=["POST","GET","DELETE"])
 def collection():
+    if request.method == "GET":
+        user_id = request.args.get("user_id")
+        data = def_other.getCollection(user_id)
+        if data != None:
+            return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
+        else:
+            return Response("Something went wrong!", mimetype="text/html", status=500)
     if request.method == "POST":
         token = request.json.get('token')
         food_id = request.json.get("food_id")
