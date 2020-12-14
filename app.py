@@ -199,8 +199,18 @@ def collection():
         else:
             return Response("Something went wrong!", mimetype="text/html", status=500)
         
-@app.route('/api/grade', methods=["POST","PATCH"])
+@app.route('/api/grade', methods=["GET","POST","PATCH"])
 def grade():
+    if  request.method == "GET":
+        food_id = request.args.get("food_id")
+        user_id = request.args.get("user_id")
+        print(food_id)
+        print(user_id)
+        data = def_other.getGrade(food_id, user_id)
+        if data != None:
+            return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
+        else:
+            return Response("Something went wrong!", mimetype="text/html", status=500)
     if request.method == "POST":
         token = request.json.get('token')
         food_id = request.json.get("food_id")

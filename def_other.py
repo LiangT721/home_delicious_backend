@@ -95,7 +95,37 @@ def deleteCollection(token,food_id):
             return True
         else:
             return False   
-        
+
+def getGrade(food_id,user_id):
+    conn = None
+    cursor = None
+    rows = None
+    try:
+        conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
+        cursor = conn.cursor()
+        cursor.execute("SELECT grade FROM grade WHERE food_id=? AND user_id=?", [food_id, user_id])
+        rows = cursor.fetchone()
+        print(rows)
+        if rows == None:
+            data = 0
+        else:
+            data = rows[0]
+    except mariadb.ProgrammingError:
+        print("program error...")
+    except mariadb.DataError:
+        print("Data error...")
+    except mariadb.DatabaseError:
+        print("Database error...")
+    except mariadb.OperationalError:
+        print("connect error...")
+    finally:
+        if(cursor != None):
+            cursor.close()
+        if(conn != None):
+            conn.rollback()
+            conn.close()
+        return data 
+            
 def addGrade(token,food_id,grade):
     conn = None
     cursor = None
