@@ -240,12 +240,25 @@ def search():
         searchTag = request.args.get("searchTag")
         if searchTag == "InUserFoods" and user_id != None:
             data = def_search.SearchFoodListInUser(content, user_id)
-        elif searchTag == "cate&location":
+        elif searchTag == "cateLocation":
             data = def_search.SearchFoodListbyCateLocation(content)
         elif searchTag == "tag":
             data = def_search.SearchFoodListbyTag(content)
         else:
             data = def_search.SearchFoodListbyContent(content)
+        if data != None:
+            return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
+        else:
+            return Response("Something went wrong!", mimetype="text/html", status=500)
+@app.route('/api/tags', methods=["GET"])
+def tag():
+    if  request.method == "GET":
+        searchTag = request.args.get("searchTag")
+        print(searchTag)
+        if searchTag == "cateLocation":
+            data = def_other.getCateLocationTags()
+        elif searchTag == "tag":
+            data = def_other.getOtherTags()
         if data != None:
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
         else:
