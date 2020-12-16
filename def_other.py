@@ -101,6 +101,8 @@ def getGrade(food_id,user_id):
     cursor = None
     rows = None
     try:
+        print(food_id)
+        print(user_id)
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
         cursor.execute("SELECT grade FROM grade WHERE food_id=? AND user_id=?", [food_id, user_id])

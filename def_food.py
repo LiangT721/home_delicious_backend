@@ -151,6 +151,35 @@ def getAllFoods():
             conn.close()
         return data
     
+def getAllFoodsByRate():
+    conn = None
+    cursor = None
+    print("all")
+    try:
+        conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
+        cursor = conn.cursor()
+        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.location ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_location ,f.tag,f.grade FROM food f INNER JOIN users u ON f.user_id = u.user_id ORDER BY f.grade DESC LIMIT 5")
+        rows = cursor.fetchall()
+        data = []
+        headers = [ i[0] for i in cursor.description]
+        for row in rows:
+            data.append(dict(zip(headers,row)))
+    except mariadb.ProgrammingError:
+        print("program error...")
+    except mariadb.DataError:
+        print("Data error...")
+    except mariadb.DatabaseError:
+        print("Database error...")
+    except mariadb.OperationalError:
+        print("connect error...")
+    finally:
+        if(cursor != None):
+            cursor.close()
+        if(conn != None):
+            conn.rollback()
+            conn.close()
+        return data
+    
 def newFood(token,food_name,food_description,food_location,food_category,cooking_way,difficulty,cooking_time,tag,images):
     conn = None
     cursor = None

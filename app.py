@@ -8,6 +8,7 @@ import os
 import def_food
 import def_user
 import def_other
+import def_search
 from PIL import Image
 from resizeimage import resizeimage
 
@@ -87,6 +88,7 @@ def food():
         user_id = request.args.get("user_id")
         food_id = request.args.get("food_id")
         cooking_way = request.args.get("cooking_way")
+        rate = request.args.get("rate")
         print(user_id)
         if food_id != None:
             data = def_food.getOneFood(food_id)
@@ -94,6 +96,8 @@ def food():
             data = def_food.getUserFoods(user_id)
         elif cooking_way != None:
             data = def_food.getCategoryFoods(cooking_way)
+        elif rate != None:
+            data = def_food.getAllFoodsByRate()
         else:
             data = def_food.getAllFoods()
         if data != None:
@@ -204,8 +208,6 @@ def grade():
     if  request.method == "GET":
         food_id = request.args.get("food_id")
         user_id = request.args.get("user_id")
-        print(food_id)
-        print(user_id)
         data = def_other.getGrade(food_id, user_id)
         if data != None:
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
@@ -229,7 +231,25 @@ def grade():
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
         else:
             return Response("Something went wrong!", mimetype="text/html", status=500)
-
+        
+@app.route('/api/search', methods=["GET"])
+def search():
+    if  request.method == "GET":
+        content = request.args.get("content")
+        user_id = request.args.get("user_id")
+        searchTag = request.args.get("searchTag")
+        if searchTag == "InUserFoods" and user_id != None:
+            data = def_search.SearchFoodListInUser(content, user_id)
+        elif searchTag == "cate&location":
+            data = def_search.SearchFoodListbyCateLocation(content)
+        elif searchTag == "tag":
+            data = def_search.SearchFoodListbyTag(content)
+        else:
+            data = def_search.SearchFoodListbyContent(content)
+        if data != None:
+            return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
+        else:
+            return Response("Something went wrong!", mimetype="text/html", status=500)
                          
 @app.route('/api/upload', methods=["POST"])
 def upload():
