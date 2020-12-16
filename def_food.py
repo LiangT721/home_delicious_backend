@@ -193,6 +193,7 @@ def newFood(token,food_name,food_description,food_location,food_category,cooking
         if user_id != None:
             created_at = str(datetime.now())[0:19]
             cursor.execute("INSERT INTO food(food_name,food_description,food_location,food_category,user_id,created_at,cooking_way,difficulty,cooking_time,tag,image) VALUES (?,?,?,?,?,?,?,?,?,?,?)",[food_name,food_description,food_location,food_category,user_id,created_at,cooking_way,difficulty,cooking_time,tag,images])
+            print("aa")
             conn.commit()
             rows = cursor.rowcount
             if rows == 1: 
