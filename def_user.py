@@ -169,29 +169,34 @@ def editUsers(username,password,old_password,email,birthday,bio,location,icon,to
             hash = hashlib.sha512(new_password.encode()).hexdigest()
             print(hash)
             cursor.execute("SELECT u.salt, u.password FROM users u WHERE u.user_id=?", [user_id, ])
-            old_salt = cursor.fetchone()
-            print(old_salt[0])
-            old_new_password = old_salt[0] + old_password
-            old_hash = hashlib.sha512(old_new_password.encode()).hexdigest()
-            print(old_hash)
+            # old_salt = cursor.fetchone()
+            # old_new_password = old_salt[0] + old_password
+            # old_hash = hashlib.sha512(old_new_password.encode()).hexdigest()
             if username != None and username != "" and username != user['username']:
                 cursor.execute("UPDATE users SET username=? WHERE user_id=?",[username, user_id])
+                conn.commit()
             if email != None and email != "" and email != user['email']:
                 cursor.execute("UPDATE users SET email=? WHERE user_id=?",[email, user_id])
+                conn.commit()
             if birthday != None and birthday != "" and birthday != user['birthday']:
                 cursor.execute("UPDATE users SET birthday=? WHERE user_id=?",[birthday, user_id])
+                conn.commit()
             if bio != None and bio != "" and bio != user['bio']:
                 cursor.execute("UPDATE users SET bio=? WHERE user_id=?",[bio, user_id])
+                conn.commit()
             if icon != None and icon != "" and icon != user['icon']:
                 cursor.execute("UPDATE users SET icon=? WHERE user_id=?",[icon, user_id])
+                conn.commit()
             if location != None and location != "" and location != user['location']:
+                print(location)
                 cursor.execute("UPDATE users SET location=? WHERE user_id=?",[location, user_id])
+                conn.commit()
             if password != None and password != "" and hash != old_salt[1]:
                 cursor.execute("UPDATE users SET password=? WHERE user_id=? AND password=?",[hash, user_id, old_hash])
                 cursor.execute("UPDATE users SET salt=? WHERE user_id=?",[salt, user_id])
-            conn.commit()
+                conn.commit()
             rows = cursor.rowcount
-        if rows == 1:
+        if rows >= 1:
             user = getUsers(user_id)
     except mariadb.ProgrammingError:
         print("program error...")

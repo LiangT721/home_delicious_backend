@@ -2,11 +2,11 @@ import mariadb
 import dbcreds
 from datetime import datetime
 import os
-# image_path
-# if os.path.exists("C:/Users/Taylo/InnoTech/Assignments/Project/Home delicious/home_delicious_frontend/users_food_004.jpg"):
-#   os.remove("C:/Users/Taylo/InnoTech/Assignments/Project/Home delicious/home_delicious_frontend/users_food_004.jpg")
-# else:
-#   print("The file does not exist")
+image_path = "C:/Users/Taylo/InnoTech/Assignments/Project/Home delicious/home_delicious_frontend/src/assets/food/IMG_8992 copy.jpg"
+if os.path.exists(image_path):
+  os.remove(image_path)
+else:
+  print("The file does not exist")
 
 
 def getOneFood(food_id):
@@ -15,7 +15,7 @@ def getOneFood(food_id):
     try:
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
-        print(food_id)
+        # print(food_id)
         cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.location ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_location ,f.tag, f.grade FROM food f INNER JOIN users u ON f.user_id = u.user_id WHERE f.food_id = ?", [food_id,])
         rows = cursor.fetchone()
         # print(rows)
@@ -264,7 +264,7 @@ def editMethod(token,food_id,ingredient,process,remark,video):
         user_id = cursor.fetchone()[0]
         print(user_id)
         if user_id != None:
-            if food_id == getOneFood(food_id)['user_id']:
+            if user_id == getOneFood(food_id)['user_id']:
                 method = getMethod(food_id)
                 if ingredient != None and ingredient != "" and ingredient != method['ingredient']:
                     cursor.execute("UPDATE methods SET ingredient=? WHERE food_id=?",[ingredient, food_id])
@@ -306,7 +306,9 @@ def editFood(token,food_id,food_name,food_description,food_location,food_categor
         print(user_id)
         if user_id != None:
             food = getOneFood(food_id)
+            print(food_id)
             if food_name != None and food_name != "" and food_name != food['food_name']:
+                print(food_name)
                 cursor.execute("UPDATE food SET food_name=? WHERE food_id=? AND user_id=?", [food_name, food_id, user_id])
                 conn.commit()
             if food_description != None and food_description != "" and food_description != food['food_description']:
@@ -334,6 +336,7 @@ def editFood(token,food_id,food_name,food_description,food_location,food_categor
                 cursor.execute("UPDATE food SET image=? WHERE food_id=? AND user_id=?", [images, food_id, user_id])
                 conn.commit()
             rows = cursor.rowcount
+            print(rows)
             if rows >=1: 
                 data = getOneFood(food_id)       
     except mariadb.ProgrammingError:
