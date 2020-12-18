@@ -2,6 +2,7 @@ import mariadb
 import dbcreds
 from datetime import datetime
 import os
+# image_path
 # if os.path.exists("C:/Users/Taylo/InnoTech/Assignments/Project/Home delicious/home_delicious_frontend/users_food_004.jpg"):
 #   os.remove("C:/Users/Taylo/InnoTech/Assignments/Project/Home delicious/home_delicious_frontend/users_food_004.jpg")
 # else:
