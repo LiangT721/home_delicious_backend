@@ -264,38 +264,42 @@ def tag():
         else:
             return Response("Something went wrong!", mimetype="text/html", status=500)
                          
-@app.route('/api/upload', methods=["POST"])
+@app.route('/api/upload', methods=["POST", "DELETE"])
 def upload():
-    target = os.path.join(APP_ROOT, '/var/www/homeDelicious/home_delicious_frontend/dist/img/uploadImgs')   
+    if  request.method == "POST":
+        target = os.path.join(APP_ROOT, '/var/www/homeDelicious/home_delicious_frontend/dist/img/uploadImgs')   
     # target = os.path.join(APP_ROOT, '/Users/Taylo/InnoTech/Assignments/Project/Home delicious/home_delicious_frontend')   
-    if not os.path.isdir(target):
-        os.mkdir(target)
-    files = request.files.getlist("file")
-    for file in files:
-        print(file)        
-        filename = file.filename
-        destination = "/".join([target, filename])
-        print(destination)
-        file.save(destination)
-        print("aa")
-        image = Image.open(destination)
-        print(image.width)
-        print(image.height)
-        if image.width > 1980 and image.height < 1980:
-            with open(destination, 'r+b') as f:
-                with Image.open(f) as image:
-                    cover = resizeimage.resize_width(image, 1980)
-                    cover.save(destination, image.format)
-        elif image.width < 1980 and image.height > 1980:
-            with open(destination, 'r+b') as f:
-                with Image.open(f) as image:
-                    cover = resizeimage.resize_height(image, 1980)
-                    cover.save(destination, image.format)
-        elif image.width > 1980 and image.height > 1980:
-            with open(destination, 'r+b') as f:
-                with Image.open(f) as image:
-                    cover = resizeimage.resize_cover(image, [1980,1980])
-                    cover.save(destination, image.format)
-    return Response(json.dumps(destination, default=str), mimetype="application/json", status=204)
-if __name__=="__main__":
-    app.run(port=4555,debug=True)
+        if not os.path.isdir(target):
+            os.mkdir(target)
+        files = request.files.getlist("file")
+        for file in files:
+            print(file)        
+            filename = file.filename
+            destination = "/".join([target, filename])
+            print(destination)
+            file.save(destination)
+            image = Image.open(destination)
+            if image.width > 1280 and image.height < 1280:
+                with open(destination, 'r+b') as f:
+                    with Image.open(f) as image:
+                        cover = resizeimage.resize_width(image, 1280)
+                        cover.save(destination, image.format)
+            elif image.width < 1280 and image.height > 1280:
+                with open(destination, 'r+b') as f:
+                    with Image.open(f) as image:
+                        cover = resizeimage.resize_height(image, 1280)
+                        cover.save(destination, image.format)
+            elif image.width > 1280 and image.height > 1280:
+                with open(destination, 'r+b') as f:
+                    with Image.open(f) as image:
+                        cover = resizeimage.resize_cover(image, [1280,1280])
+                        cover.save(destination, image.format)
+        return Response(json.dumps(destination, default=str), mimetype="application/json", status=204)
+    if __name__=="__main__":
+        app.run(port=4555,debug=True)
+    if  request.method == "DELETE":
+        image_path = request.json.get("image_path")
+        if os.path.exists(image_path):
+            os.remove(image_path)
+        else:
+            print("The file does not exist")
