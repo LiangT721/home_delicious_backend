@@ -299,6 +299,7 @@ def upload():
         app.run(port=4555,debug=True)
     if  request.method == "DELETE":
         image_path = request.json.get("image_path")
+        print(image_path)
         if os.path.exists(image_path):
             os.remove(image_path)
         else:
