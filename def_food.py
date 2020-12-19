@@ -2,11 +2,11 @@ import mariadb
 import dbcreds
 from datetime import datetime
 import os
-image_path = "C:/Users/Taylo/InnoTech/Assignments/Project/Home delicious/home_delicious_frontend/src/assets/food/IMG_8992 copy.jpg"
-if os.path.exists(image_path):
-  os.remove(image_path)
-else:
-  print("The file does not exist")
+# image_path = "/var/www/homeDelicious/home_delicious_frontend/dist/img/uploadImgs/1_food_Seafood-Paella-LEAD-3.jpg"
+# if os.path.exists(image_path):
+#   os.remove(image_path)
+# else:
+#   print("The file does not exist")
 
 
 def getOneFood(food_id):

@@ -298,7 +298,9 @@ def upload():
     if __name__=="__main__":
         app.run(port=4555,debug=True)
     if  request.method == "DELETE":
-        image_path = request.json.get("image_path")
+        image = request.json.get("image")
+        path = "/var/www/homeDelicious/home_delicious_frontend/dist/img/uploadImgs/"
+        image_path = path+image
         print(image_path)
         if os.path.exists(image_path):
             os.remove(image_path)
