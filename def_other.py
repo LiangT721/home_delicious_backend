@@ -8,7 +8,7 @@ def getCollection(user_id):
     try:
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
-        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.location ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_location ,f.tag, f.grade FROM collection c INNER JOIN food f ON c.food_id = f.food_id INNER JOIN users u ON c.user_id=u.user_id WHERE c.user_id = ?", [user_id])
+        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.location ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_location ,f.tag, f.grade ,f.lang FROM collection c INNER JOIN food f ON c.food_id = f.food_id INNER JOIN users u ON c.user_id=u.user_id WHERE c.user_id = ?", [user_id])
         rows = cursor.fetchall()
         data = []
         headers = [ i[0] for i in cursor.description]
