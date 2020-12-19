@@ -16,7 +16,7 @@ def getOneFood(food_id):
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
         # print(food_id)
-        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.location ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_location ,f.tag, f.grade FROM food f INNER JOIN users u ON f.user_id = u.user_id WHERE f.food_id = ?", [food_id,])
+        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.location ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_location ,f.tag, f.grade ,f.lang FROM food f INNER JOIN users u ON f.user_id = u.user_id WHERE f.food_id = ?", [food_id,])
         rows = cursor.fetchone()
         # print(rows)
         data = {}
@@ -73,7 +73,7 @@ def getUserFoods(user_id):
     try:
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
-        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.location ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_location ,f.tag,f.grade FROM food f INNER JOIN users u ON f.user_id = u.user_id WHERE f.user_id = ? ORDER BY f.food_id DESC", [user_id,])
+        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.location ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_location ,f.tag,f.grade ,f.lang FROM food f INNER JOIN users u ON f.user_id = u.user_id WHERE f.user_id = ? ORDER BY f.food_id DESC", [user_id,])
         rows = cursor.fetchall()
         data = []
         headers = [ i[0] for i in cursor.description]
@@ -101,7 +101,7 @@ def getCategoryFoods(cooking_way):
     try:
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
-        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.location ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_location ,f.tag,f.grade FROM food f INNER JOIN users u ON f.user_id = u.user_id WHERE f.cooking_way = ? ORDER BY f.food_id DESC", [cooking_way,])
+        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.location ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_location ,f.tag,f.grade ,f.lang FROM food f INNER JOIN users u ON f.user_id = u.user_id WHERE f.cooking_way = ? ORDER BY f.food_id DESC", [cooking_way,])
         rows = cursor.fetchall()
         data = []
         headers = [ i[0] for i in cursor.description]
@@ -130,7 +130,7 @@ def getAllFoods():
     try:
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
-        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.location ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_location ,f.tag,f.grade FROM food f INNER JOIN users u ON f.user_id = u.user_id ORDER BY f.food_id DESC")
+        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.location ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_location ,f.tag,f.grade ,f.lang FROM food f INNER JOIN users u ON f.user_id = u.user_id ORDER BY f.food_id DESC")
         rows = cursor.fetchall()
         data = []
         headers = [ i[0] for i in cursor.description]
@@ -159,7 +159,7 @@ def getAllFoodsByRate():
     try:
         conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
-        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.location ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_location ,f.tag,f.grade FROM food f INNER JOIN users u ON f.user_id = u.user_id ORDER BY f.grade DESC LIMIT 5")
+        cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.location ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_location ,f.tag,f.grade ,f.lang FROM food f INNER JOIN users u ON f.user_id = u.user_id ORDER BY f.grade DESC LIMIT 5")
         rows = cursor.fetchall()
         data = []
         headers = [ i[0] for i in cursor.description]
@@ -181,7 +181,7 @@ def getAllFoodsByRate():
             conn.close()
         return data
     
-def newFood(token,food_name,food_description,food_location,food_category,cooking_way,difficulty,cooking_time,tag,images):
+def newFood(token,food_name,food_description,food_location,food_category,cooking_way,difficulty,cooking_time,tag,images,lang):
     conn = None
     cursor = None
     rows = None
@@ -193,12 +193,12 @@ def newFood(token,food_name,food_description,food_location,food_category,cooking
         print(user_id)
         if user_id != None:
             created_at = str(datetime.now())[0:19]
-            cursor.execute("INSERT INTO food(food_name,food_description,food_location,food_category,user_id,created_at,cooking_way,difficulty,cooking_time,tag,image) VALUES (?,?,?,?,?,?,?,?,?,?,?)",[food_name,food_description,food_location,food_category,user_id,created_at,cooking_way,difficulty,cooking_time,tag,images])
+            cursor.execute("INSERT INTO food(food_name,food_description,food_location,food_category,user_id,created_at,cooking_way,difficulty,cooking_time,tag,image,lang) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",[food_name,food_description,food_location,food_category,user_id,created_at,cooking_way,difficulty,cooking_time,tag,images,lang])
             print("aa")
             conn.commit()
             rows = cursor.rowcount
             if rows == 1: 
-                cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.location ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_location ,f.tag, f.grade FROM food f INNER JOIN users u ON f.user_id = u.user_id WHERE f.created_at = ? AND f.image=?", [created_at, images])
+                cursor.execute("SELECT u.user_id ,u.username ,u.birthday ,u.join_date ,u.email ,u.icon ,u.location ,u.bio ,f.food_id ,f.food_name ,f.image ,f.cooking_time ,f.cooking_way ,f.created_at ,f.difficulty ,f.food_category ,f.food_description ,f.food_location ,f.tag, f.grade ,f.lang FROM food f INNER JOIN users u ON f.user_id = u.user_id WHERE f.created_at = ? AND f.image=?", [created_at, images])
                 rows = cursor.fetchone()
                 print(rows)
                 data = {}
