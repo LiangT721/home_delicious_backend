@@ -115,7 +115,8 @@ def food():
         cooking_time = request.json.get("cooking_time")
         tag = request.json.get("tag")
         images = request.json.get("images")
-        data = def_food.newFood(token,food_name,food_description,food_location,food_category,cooking_way,difficulty,cooking_time,tag,images)
+        lang = request.json.get("lang")
+        data = def_food.newFood(token,food_name,food_description,food_location,food_category,cooking_way,difficulty,cooking_time,tag,images,lang)
         if data != None:
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
         else:
