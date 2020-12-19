@@ -273,7 +273,7 @@ def upload():
             os.mkdir(target)
         files = request.files.getlist("file")
         for file in files:
-            print(file)        
+            # print(file)        
             filename = file.filename
             destination = "/".join([target, filename])
             print(destination)
@@ -299,10 +299,15 @@ def upload():
         app.run(port=4555,debug=True)
     if  request.method == "DELETE":
         image = request.json.get("image")
+        print(image)
         path = "/var/www/homeDelicious/home_delicious_frontend/dist/img/uploadImgs/"
         image_path = path+image
         print(image_path)
         if os.path.exists(image_path):
             os.remove(image_path)
+            if os.path.exists(image_path):
+                return Response("Delete went wrong!", mimetype="text/html", status=500)
+            else:
+                return Response("Delete sucess", mimetype="application/json", status=200) 
         else:
             print("The file does not exist")
