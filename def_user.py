@@ -196,10 +196,10 @@ def editUsers(username,password,old_password,email,birthday,bio,location,icon,to
             #     cursor.execute("UPDATE users SET salt=? WHERE user_id=?",[salt, user_id])
             #     conn.commit()
             rows = cursor.rowcount
-            newUser = {}
             if rows >= 1:
+                newuser = {}
                 newuser = getUsers(user_id)
-            print(newuser)
+                print(newuser)
     except mariadb.ProgrammingError:
         print("program error...")
     except mariadb.DataError:
