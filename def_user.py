@@ -191,13 +191,14 @@ def editUsers(username,password,old_password,email,birthday,bio,location,icon,to
                 print(location)
                 cursor.execute("UPDATE users SET location=? WHERE user_id=?",[location, user_id])
                 conn.commit()
-            # if password != None and password != "" and hash != old_salt[1]:
-            #     cursor.execute("UPDATE users SET password=? WHERE user_id=? AND password=?",[hash, user_id, old_hash])
-            #     cursor.execute("UPDATE users SET salt=? WHERE user_id=?",[salt, user_id])
-            #     conn.commit()
-                rows = cursor.rowcount
-                print(rows)
-                print(user_id)
+            if password != None and password != "" and hash != old_salt[1]:
+                cursor.execute("UPDATE users SET password=? WHERE user_id=? AND password=?",[hash, user_id, old_hash])
+                cursor.execute("UPDATE users SET salt=? WHERE user_id=?",[salt, user_id])
+                conn.commit()
+            rows = cursor.rowcount
+            if rows >= 1:
+                newuser = getUsers(user_id)
+            print(newuser)
     except mariadb.ProgrammingError:
         print("program error...")
     except mariadb.DataError:
@@ -212,8 +213,7 @@ def editUsers(username,password,old_password,email,birthday,bio,location,icon,to
         if(conn != None):
             conn.rollback()
             conn.close()
-        if rows >= 1:
-            return user_id
+        return newuser
     
     
 def deleteUsers(password,token):
