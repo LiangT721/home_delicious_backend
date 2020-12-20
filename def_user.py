@@ -196,6 +196,7 @@ def editUsers(username,password,old_password,email,birthday,bio,location,icon,to
             #     cursor.execute("UPDATE users SET salt=? WHERE user_id=?",[salt, user_id])
             #     conn.commit()
             rows = cursor.rowcount
+            print(rows)
             if rows >= 1:
                 newuser = {}
                 newuser = getUsers(user_id)
