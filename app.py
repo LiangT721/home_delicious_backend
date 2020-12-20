@@ -51,8 +51,10 @@ def users():
         bio = request.json.get('bio')
         icon = request.json.get('icon')
         token = request.json.get('token')
-        data = def_user.editUsers(username,password,old_password,email,birthday,bio,location,icon,token)
-        if data != None:
+        user_id =  def_user.editUsers(username,password,old_password,email,birthday,bio,location,icon,token)
+        if user_id != None:
+            data = def_user.getUsers(user_id)
+            if data != None:
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
         else:
             return Response("Something went wrong!", mimetype="text/html", status=500)
