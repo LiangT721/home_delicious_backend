@@ -212,7 +212,7 @@ def editUsers(username,password,old_password,email,birthday,bio,location,icon,to
         if(conn != None):
             conn.rollback()
             conn.close()
-        if row >= 1:
+        if rows >= 1:
             return user_id
     
     
