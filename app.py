@@ -55,7 +55,9 @@ def users():
         if user_id != None:
             data = def_user.getUsers(user_id)
             if data != None:
-            return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
+                return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
+            else:
+                return Response("Something went wrong!", mimetype="text/html", status=500)
         else:
             return Response("Something went wrong!", mimetype="text/html", status=500)
     if request.method == "DELETE":
