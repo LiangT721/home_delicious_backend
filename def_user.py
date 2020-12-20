@@ -198,6 +198,7 @@ def editUsers(username,password,old_password,email,birthday,bio,location,icon,to
             rows = cursor.rowcount
         if rows >= 1:
             user = getUsers(user_id)
+            print(user)
     except mariadb.ProgrammingError:
         print("program error...")
     except mariadb.DataError:
