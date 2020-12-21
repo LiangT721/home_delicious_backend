@@ -276,8 +276,8 @@ def editMethod(token,food_id,ingredient,process,remark,video):
                     cursor.execute("UPDATE methods SET video=? WHERE food_id=?",[ingredient, food_id])
                 conn.commit()
                 rows = cursor.rowcount
-                if rows == 1: 
-                    data = getMethod(food_id)           
+                # if rows == 1: 
+                data = getMethod(food_id)           
     except mariadb.ProgrammingError:
         print("program error...")
     except mariadb.DataError:
@@ -337,8 +337,8 @@ def editFood(token,food_id,food_name,food_description,food_location,food_categor
                 conn.commit()
             rows = cursor.rowcount
             print(rows)
-            if rows >=1: 
-                data = getOneFood(food_id)       
+            # if rows >=1: 
+            data = getOneFood(food_id)       
     except mariadb.ProgrammingError:
         print("program error...")
     except mariadb.DataError:
