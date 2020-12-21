@@ -268,14 +268,17 @@ def editMethod(token,food_id,ingredient,process,remark,video):
                 method = getMethod(food_id)
                 if ingredient != None and ingredient != "" and ingredient != method['ingredient']:
                     cursor.execute("UPDATE methods SET ingredient=? WHERE food_id=?",[ingredient, food_id])
+                    conn.commit()
                 if process != None and process != "" and process != method['process']:
                     cursor.execute("UPDATE methods SET process=? WHERE food_id=?",[process, food_id])
+                    conn.commit()
                 if remark != None and remark != "" and remark != method['remark']:
                     cursor.execute("UPDATE methods SET remark=? WHERE food_id=?",[remark, food_id])
+                    conn.commit()
                 if video != None and video != "" and video != method['video']:
                     cursor.execute("UPDATE methods SET video=? WHERE food_id=?",[ingredient, food_id])
-                conn.commit()
-                rows = cursor.rowcount
+                    conn.commit()
+                    rows = cursor.rowcount
                 # if rows == 1: 
                 data = getMethod(food_id)           
     except mariadb.ProgrammingError:
