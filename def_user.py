@@ -151,7 +151,40 @@ def newUsers(username,password,email,birthday,bio,location,icon):
             conn.close()
         return user
     
-def editUsers(username,password,old_password,email,birthday,bio,location,icon,token):
+def CheckPassWord(token, old_password):
+    conn = None
+    cursor = None
+    try:
+        conn = mariadb.connect(user=dbcreds.user, password=dbcreds.password, host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
+        cursor = conn.cursor()
+        cursor.execute("SELECT user_id FROM token WHERE token=?", [token,])
+        user_id = cursor.fetchone()[0]
+        print("aa")
+        if user_id != None:
+            cursor.execute("SELECT u.salt, u.password FROM users u WHERE u.user_id=?", [user_id, ])
+            old_salt = cursor.fetchone()
+            print('BB')
+            print(old_salt)
+            old_salted_password = old_salt[0] + old_password
+            old_hash = hashlib.sha512(old_salted_password.encode()).hexdigest()
+    except mariadb.ProgrammingError:
+        print("program error...")
+    except mariadb.DataError:
+        print("Data error...")
+    except mariadb.DatabaseError:
+        print("Database error...")
+    except mariadb.OperationalError:
+        print("connect error...")
+    finally:
+        if(cursor != None):
+            cursor.close()
+        if(conn != None):
+            conn.rollback()
+            conn.close()   
+        if old_salt[1] == old_hash:
+            return old_hash
+        
+def editUsers(username,password,old_hash,email,birthday,bio,location,icon,token):
     conn = None
     cursor = None
     try:
@@ -162,16 +195,6 @@ def editUsers(username,password,old_password,email,birthday,bio,location,icon,to
         print(user_id)
         if user_id != None:
             user = getUsers(user_id)
-            print(user)
-            # salt = get_random_alphanumeric_string(10)
-            # print(salt)
-            # new_password = salt + password
-            # hash = hashlib.sha512(new_password.encode()).hexdigest()
-            # print(hash)
-            # cursor.execute("SELECT u.salt, u.password FROM users u WHERE u.user_id=?", [user_id, ])
-            # old_salt = cursor.fetchone()
-            # old_new_password = old_salt[0] + old_password
-            # old_hash = hashlib.sha512(old_new_password.encode()).hexdigest()
             if username != None and username != "" and username != user['username']:
                 cursor.execute("UPDATE users SET username=? WHERE user_id=?",[username, user_id])
                 conn.commit()
@@ -191,13 +214,18 @@ def editUsers(username,password,old_password,email,birthday,bio,location,icon,to
                 print(location)
                 cursor.execute("UPDATE users SET location=? WHERE user_id=?",[location, user_id])
                 conn.commit()
-            # if password != None and password != "" and hash != old_salt[1]:
-            #     cursor.execute("UPDATE users SET password=? WHERE user_id=? AND password=?",[hash, user_id, old_hash])
-            #     cursor.execute("UPDATE users SET salt=? WHERE user_id=?",[salt, user_id])
-            #     conn.commit()
+            if password != None and password != "":
+                salt = get_random_alphanumeric_string(10)
+                print(salt)
+                salted_password = salt + password
+                new_hash = hashlib.sha512(salted_password.encode()).hexdigest()
+                print(new_hash)
+                if new_hash != old_hash:
+                    cursor.execute("UPDATE users SET password=?, salt=? WHERE user_id=? AND password=?",[new_hash, salt, user_id, old_hash])
+                    conn.commit()
             rows = cursor.rowcount
             print(rows)
-            if rows >= 1:
+            if rows >= 0:
                 newuser = {}
                 newuser = getUsers(user_id)
                 print(newuser)

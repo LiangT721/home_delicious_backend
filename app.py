@@ -51,11 +51,15 @@ def users():
         bio = request.json.get('bio')
         icon = request.json.get('icon')
         token = request.json.get('token')
-        data = def_user.editUsers(username,password,old_password,email,birthday,bio,location,icon,token)
-        if data != None:
-            return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
+        old_hash = def_user.CheckPassWord(token, old_password)
+        if old_hash != None:
+            data = def_user.editUsers(username,password,old_hash,email,birthday,bio,location,icon,token)
+            if data != None:
+                return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
+            else:
+                return Response("Something went wrong!", mimetype="text/html", status=500)
         else:
-            return Response("Something went wrong!", mimetype="text/html", status=500)
+            return Response("Password is incorrect", mimetype="text/html", status=500)
     if request.method == "DELETE":
         password = request.json.get('password')
         token = request.json.get('token')
