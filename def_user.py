@@ -163,12 +163,12 @@ def editUsers(username,password,old_password,email,birthday,bio,location,icon,to
         if user_id != None:
             user = getUsers(user_id)
             print(user)
-            salt = get_random_alphanumeric_string(10)
-            print(salt)
-            new_password = salt + password
-            hash = hashlib.sha512(new_password.encode()).hexdigest()
-            print(hash)
-            cursor.execute("SELECT u.salt, u.password FROM users u WHERE u.user_id=?", [user_id, ])
+            # salt = get_random_alphanumeric_string(10)
+            # print(salt)
+            # new_password = salt + password
+            # hash = hashlib.sha512(new_password.encode()).hexdigest()
+            # print(hash)
+            # cursor.execute("SELECT u.salt, u.password FROM users u WHERE u.user_id=?", [user_id, ])
             # old_salt = cursor.fetchone()
             # old_new_password = old_salt[0] + old_password
             # old_hash = hashlib.sha512(old_new_password.encode()).hexdigest()
