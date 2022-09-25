@@ -9,6 +9,7 @@ import def_food
 import def_user
 import def_other
 import def_search
+import def_conment
 from PIL import Image
 from resizeimage import resizeimage
 
@@ -121,6 +122,7 @@ def food():
         images = request.json.get("images")
         lang = request.json.get("lang")
         data = def_food.newFood(token,food_name,food_description,food_location,food_category,cooking_way,difficulty,cooking_time,tag,images,lang)
+        print(data)
         if data != None:
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
         else:
@@ -268,12 +270,35 @@ def tag():
             return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
         else:
             return Response("Something went wrong!", mimetype="text/html", status=500)
+
+@app.route('/api/comments',methods=["GET", "POST", "PATCH", "DELETE"])
+def comments():
+    if request.method == "GET":
+        food_id = request.args.get("food_id")
+        print(food_id) #delete
+        data = def_conment.getComments(food_id)
+        if data != None:
+            return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
+        else:
+            return Response("Something went wrong!", mimetype="text/html", status=500)
+    if request.method == "POST":
+        food_id = request.json.get("food_id")
+        token = request.json.get('token')
+        content = request.json.get("content")
+        images = request.json.get("images")
+        data = def_conment.create_comment(food_id,token,content,images)
+        if data != None:
+            return Response(json.dumps(data, default=str), mimetype="application/json", status=200)
+        else:
+            return Response("Something went wrong!", mimetype="text/html", status=500)
+            
+
+            
                          
 @app.route('/api/upload', methods=["POST", "DELETE"])
 def upload():
     if  request.method == "POST":
-        target = os.path.join(APP_ROOT, '/var/www/homeDelicious/home_delicious_frontend/dist/img/uploadImgs')   
-    # target = os.path.join(APP_ROOT, '/Users/Taylo/InnoTech/Assignments/Project/Home delicious/home_delicious_frontend')   
+        target = os.path.join(APP_ROOT, '/var/www/home_delicious/img/uploadImgs')   
         if not os.path.isdir(target):
             os.mkdir(target)
         files = request.files.getlist("file")
@@ -302,10 +327,12 @@ def upload():
         return Response(json.dumps(destination, default=str), mimetype="application/json", status=204)
     if __name__=="__main__":
         app.run(port=4555,debug=True)
+
+
     if  request.method == "DELETE":
         image = request.json.get("image")
         print(image)
-        path = "/var/www/homeDelicious/home_delicious_frontend/dist/img/uploadImgs/"
+        path = "/var/www/home_delicious/img/uploadImgs/"
         image_path = path+image
         print(image_path)
         if os.path.exists(image_path):
